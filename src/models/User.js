@@ -97,7 +97,9 @@ const userSchema = new mongoose.Schema({
     transactions:       [transactionSchema],
     goals:              [goalSchema],
     recurringPayments:  [recurringSchema],
-    createdAt:          { type: Date, default: Date.now }
+    createdAt:          { type: Date, default: Date.now },
+    otpCode:            { type: String, default: null },
+    otpExpiry:          { type: Date, default: null }
 });
 
 module.exports = mongoose.model('User', userSchema);
