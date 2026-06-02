@@ -45,6 +45,15 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
+// Explicit image routes for Vercel
+app.get('/paylance_logo_2.jpeg', (req, res) => {
+    res.sendFile(path.join(__dirname, 'paylance_logo_2.jpeg'));
+});
+
+app.get('/paylance_logo.jpeg', (req, res) => {
+    res.sendFile(path.join(__dirname, 'paylance_logo.jpeg'));
+});
+
 // ✅ Cache fix — browser ko har baar fresh files milein
 app.use(express.static(path.join(__dirname), {
     etag: true,
