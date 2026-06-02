@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paylance - Professional Digital Banking</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#6C5CE7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Paylance">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <link rel="stylesheet" href="static/style.css?v=2.1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-content">
+            <div class="splash-logo">
+                  <img src="paylance_logo_2.jpeg" alt="">
+            </div>
+            <h1 class="splash-title">Paylance</h1>
+            <p class="splash-tagline">Professional Digital Banking</p>
+            <div class="splash-loader"></div>
+        </div>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div class="login-page" id="loginPage">
+        <div class="login-bg-animation">
+            <div class="floating-shape shape-1"></div>
+            <div class="floating-shape shape-2"></div>
+            <div class="floating-shape shape-3"></div>
+        </div>
+        
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <!-- <i class="fas fa-wallet"></i> -->
+                         <img src="paylance_logo_2.jpeg" alt="">
+                    </div>
+                    <h1>Paylance</h1>
+                </div>
+                <p class="tagline">Your Professional Banking Partner</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="input-group">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" id="mobileNumber" placeholder="Mobile Number (03XXXXXXXXX)" maxlength="11">
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="mpin" placeholder="Enter 5-Digit PIN" maxlength="5">
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
+                </div>
+                
+                <div class="biometric-option" onclick="biometricLogin()">
+                    <i class="fas fa-fingerprint"></i>
+                    <span>Login with Biometric</span>
+                </div>
+                
+                <button class="btn-primary" onclick="login()">
+                    <span>Login</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                
+                <div class="login-footer">
+                    <a href="#" class="link" onclick="event.preventDefault(); showModal('forgotPin')">Forgot PIN?</a>
+                    <a href="#" class="link" onclick="event.preventDefault(); showModal('register')">Create Account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div class="dashboard" id="dashboard">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="profile-avatar" onclick="showProfile()">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="header-info">
+                    <span class="greeting">Good Morning</span>
+                    <span class="username" id="userName">User</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <i class="fas fa-moon theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle Theme"></i>
+                <div class="notification-bell" onclick="showNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <i class="fas fa-qrcode qr-icon" onclick="showQRCode()"></i>
+            </div>
+        </header>
+
+        <!-- Balance Card with Glassmorphism -->
+        <div class="balance-section">
+            <div class="balance-card">
+                <div class="card-chip">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="balance-header">
+                    <span>Total Balance</span>
+                    <i class="fas fa-eye balance-toggle" onclick="toggleBalance()"></i>
+                </div>
+                <div class="balance-amount">
+                    <span class="currency">PKR</span>
+                    <span id="balance" class="amount">25,000</span>
+                </div>
+                <div class="card-footer">
+                    <div class="account-info">
+                        <span class="label">Account</span>
+                        <span id="accountNumber" class="value">03XX-XXXXXXX</span>
+                    </div>
+                    <div class="card-type">
+                        <i class="fas fa-wallet"></i>
+                        <span>Paylance</span>
+                    </div>
+                </div>
+                <div class="card-glow"></div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-item">
+                    <div class="stat-icon income">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Income</span>
+                        <span class="stat-value" id="incomeDisplay">+Rs 0</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon expense">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Expense</span>
+                        <span class="stat-value" id="expenseDisplay">-Rs 0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="action-item" onclick="showModal('sendMoney')">
+                <div class="action-icon send">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <span>Send</span>
+            </div>
+            <div class="action-item" onclick="showModal('requestMoney')">
+                <div class="action-icon request">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <span>Request</span>
+            </div>
+            <div class="action-item" onclick="showModal('mobileLoad')">
+                <div class="action-icon load">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <span>Recharge</span>
+            </div>
+            <div class="action-item" onclick="showModal('billPayment')">
+                <div class="action-icon bill">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <span>Bills</span>
+            </div>
+            <div class="action-item" onclick="showModal('addMoney')">
+                <div class="action-icon add">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <span>Add Cash</span>
+            </div>
+            <div class="action-item" onclick="showModal('currencyConverter')">
+                <div class="action-icon converter">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <span>Convert</span>
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="services-section">
+            <div class="section-header">
+                <h3 class="section-title">Services</h3>
+                <a href="#" class="view-all">See All <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="services-grid">
+                <div class="service-card" onclick="showModal('sendMoney')">
+                    <div class="service-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <span>Transfer</span>
+                </div>
+                <div class="service-card" onclick="showModal('investment')">
+                    <div class="service-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <span>Invest</span>
+                </div>
+                <div class="service-card" onclick="showModal('savings')">
+                    <div class="service-icon">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <span>Savings</span>
+                </div>
+                <div class="service-card" onclick="showModal('billPayment')">
+                    <div class="service-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <span>Electricity</span>
+                </div>
+                <div class="service-card" onclick="showModal('billPayment')">
+                    <div class="service-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <span>Gas</span>
+                </div>
+                <div class="service-card" onclick="showModal('billPayment')">
+                    <div class="service-icon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <span>Internet</span>
+                </div>
+                <div class="service-card" onclick="showModal('insurance')">
+                    <div class="service-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <span>Insurance</span>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    <span>More</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="history-section">
+            <div class="section-header">
+                <h3 class="section-title">Recent Transactions</h3>
+                <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div id="transactionList" class="transaction-list">
+                <div class="empty-state">
+                    <i class="fas fa-receipt"></i>
+                    <p>No transactions yet</p>
+                    <span>Start your first transaction</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" id="navHome" onclick="showPage('home')">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" id="navAnalytics" onclick="showPage('analytics')">
+                <i class="fas fa-chart-pie"></i>
+                <span>Analytics</span>
+            </div>
+            <div class="nav-item nav-center" onclick="showModal('scanQR')">
+                <div class="nav-center-icon">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+            </div>
+            <div class="nav-item" id="navCards" onclick="showPage('cards')">
+                <i class="fas fa-credit-card"></i>
+                <span>Cards</span>
+            </div>
+            <div class="nav-item" id="navProfile" onclick="showPage('profile')">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </div>
+        </nav>
+    </div>
+
+    <!-- CARDS PAGE -->
+    <div class="cards-page page-content" id="cardsPage">
+        <header class="page-header">
+            <i class="fas fa-arrow-left back-btn" onclick="showPage('home')"></i>
+            <h2 style="margin-right:auto;margin-left:12px;">My Cards</h2>
+        </header>
+
+        <!-- Upgrade Banner (shown only for basic users) -->
+        <div id="upgradeBanner" style="display:none; margin:16px; background:linear-gradient(135deg,#6C5CE7,#a29bfe); border-radius:16px; padding:16px 20px; color:#fff;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div>
+                    <div style="font-weight:700; font-size:15px;"><i class="fas fa-crown"></i> Upgrade to Verified</div>
+                    <div style="font-size:12px; opacity:0.9; margin-top:4px;">Get 2 physical cards + Rs 5 lakh monthly limit</div>
+                </div>
+                <button onclick="showModal('kycUpgrade')" style="background:#fff; color:#6C5CE7; border:none; border-radius:10px; padding:8px 14px; font-weight:700; font-size:13px; cursor:pointer;">
+                    Upgrade
+                </button>
+            </div>
+        </div>
+
+        <!-- KYC Status Banner (shown when pending/rejected) -->
+        <div id="kycStatusBanner" style="display:none; margin:0 16px 16px; border-radius:12px; padding:12px 16px; font-size:13px;"></div>
+
+        <!-- Transaction Limit Info -->
+        <div id="txLimitBar" style="margin:0 16px 16px; background:#f8f9fa; border-radius:12px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; font-size:13px; border:1px solid #e9ecef;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-tachometer-alt" style="color:#6C5CE7;"></i>
+                <span style="color:#636e72;">Transaction Limit</span>
+            </div>
+            <span id="txLimitValue" style="font-weight:700; color:#2d3436;">Rs 25,000</span>
+        </div>
+
+        <!-- Dynamic Cards List -->
+        <div class="cards-container" id="cardsContainer">
+            <div style="text-align:center; padding:40px; color:#b2bec3;">
+                <i class="fas fa-credit-card" style="font-size:40px; margin-bottom:12px;"></i>
+                <p>Loading cards...</p>
+            </div>
+        </div>
+
+        <div class="card-actions" id="cardActionsSection" style="display:none;">
+            <h3 class="section-title">Card Actions</h3>
+            <div class="action-buttons" id="cardActionButtons"></div>
+        </div>
+    </div>
+
+    <!-- ANALYTICS PAGE -->
+    <div class="analytics-page page-content" id="analyticsPage">
+        <header class="page-header">
+            <i class="fas fa-arrow-left back-btn" onclick="showPage('home')"></i>
+            <h2>Analytics</h2>
+            <i class="fas fa-download download-btn" onclick="downloadReport()"></i>
+        </header>
+
+        <div class="analytics-period">
+            <button class="period-btn active" onclick="changePeriod('week')">Week</button>
+            <button class="period-btn" onclick="changePeriod('month')">Month</button>
+            <button class="period-btn" onclick="changePeriod('year')">Year</button>
+        </div>
+
+        <div class="analytics-summary">
+            <div class="summary-card income-card">
+                <div class="summary-icon">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="summary-content">
+                    <span class="summary-label">Total Income</span>
+                    <span class="summary-amount">Rs 45,000</span>
+                    <span class="summary-change positive">+12% from last month</span>
+                </div>
+            </div>
+
+            <div class="summary-card expense-card">
+                <div class="summary-icon">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="summary-content">
+                    <span class="summary-label">Total Expense</span>
+                    <span class="summary-amount">Rs 28,500</span>
+                    <span class="summary-change negative">+8% from last month</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h3 class="section-title">Spending Overview</h3>
+            <div class="chart-container">
+                <div class="bar-chart" id="barChart">
+                    <div class="bar-wrap"><div class="bar-fill" style="height:60%;background:linear-gradient(180deg,#1a237e,#283593)"></div><span class="bar-label">Mon</span></div>
+                    <div class="bar-wrap"><div class="bar-fill" style="height:80%;background:linear-gradient(180deg,#1a237e,#283593)"></div><span class="bar-label">Tue</span></div>
+                    <div class="bar-wrap"><div class="bar-fill" style="height:45%;background:linear-gradient(180deg,#1a237e,#283593)"></div><span class="bar-label">Wed</span></div>
+                    <div class="bar-wrap"><div class="bar-fill active-bar" style="height:90%;background:linear-gradient(180deg,#0d3b6e,#1565c0)"></div><span class="bar-label">Thu</span></div>
+                    <div class="bar-wrap"><div class="bar-fill" style="height:55%;background:linear-gradient(180deg,#1a237e,#283593)"></div><span class="bar-label">Fri</span></div>
+                    <div class="bar-wrap"><div class="bar-fill" style="height:70%;background:linear-gradient(180deg,#1a237e,#283593)"></div><span class="bar-label">Sat</span></div>
+                    <div class="bar-wrap"><div class="bar-fill" style="height:35%;background:linear-gradient(180deg,#1a237e,#283593)"></div><span class="bar-label">Sun</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-breakdown">
+            <h3 class="section-title">Category Breakdown</h3>
+            <div class="category-list">
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-icon" style="background: linear-gradient(135deg, #1a237e, #283593);">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="category-details">
+                            <span class="category-name">Shopping</span>
+                            <span class="category-amount">Rs 12,500</span>
+                        </div>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%; background: linear-gradient(135deg, #1a237e, #283593);"></div>
+                        </div>
+                        <span class="category-percent">45%</span>
+                    </div>
+                </div>
+
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-icon" style="background: linear-gradient(135deg, #1b5e20, #2e7d32);">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="category-details">
+                            <span class="category-name">Food & Dining</span>
+                            <span class="category-amount">Rs 8,200</span>
+                        </div>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%; background: linear-gradient(135deg, #1b5e20, #2e7d32);"></div>
+                        </div>
+                        <span class="category-percent">30%</span>
+                    </div>
+                </div>
+
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-icon" style="background: linear-gradient(135deg, #4FACFE, #00F2FE);">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="category-details">
+                            <span class="category-name">Transportation</span>
+                            <span class="category-amount">Rs 4,800</span>
+                        </div>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 18%; background: linear-gradient(135deg, #4FACFE, #00F2FE);"></div>
+                        </div>
+                        <span class="category-percent">18%</span>
+                    </div>
+                </div>
+
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-icon" style="background: linear-gradient(135deg, #43E97B, #38F9D7);">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <div class="category-details">
+                            <span class="category-name">Entertainment</span>
+                            <span class="category-amount">Rs 3,000</span>
+                        </div>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 11%; background: linear-gradient(135deg, #43E97B, #38F9D7);"></div>
+                        </div>
+                        <span class="category-percent">11%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="top-merchants">
+            <h3 class="section-title">Top Merchants</h3>
+            <div class="merchant-list">
+                <div class="merchant-item">
+                    <div class="merchant-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="merchant-info">
+                        <span class="merchant-name">Amazon</span>
+                        <span class="merchant-transactions">12 transactions</span>
+                    </div>
+                    <span class="merchant-amount">Rs 8,500</span>
+                </div>
+
+                <div class="merchant-item">
+                    <div class="merchant-icon">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <div class="merchant-info">
+                        <span class="merchant-name">Starbucks</span>
+                        <span class="merchant-transactions">8 transactions</span>
+                    </div>
+                    <span class="merchant-amount">Rs 3,200</span>
+                </div>
+
+                <div class="merchant-item">
+                    <div class="merchant-icon">
+                        <i class="fas fa-gas-pump"></i>
+                    </div>
+                    <div class="merchant-info">
+                        <span class="merchant-name">PSO</span>
+                        <span class="merchant-transactions">6 transactions</span>
+                    </div>
+                    <span class="merchant-amount">Rs 4,500</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="profile-page page-content" id="profilePage">
+        <header class="page-header">
+            <i class="fas fa-arrow-left back-btn" onclick="showPage('home')"></i>
+            <h2>Profile</h2>
+            <i class="fas fa-cog settings-btn" onclick="showModal('settings')"></i>
+        </header>
+
+        <div class="profile-header-section">
+            <div class="profile-avatar-large">
+                <i class="fas fa-user"></i>
+                <div class="avatar-edit">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            <h3 class="profile-name" id="profileName">User</h3>
+            <p class="profile-phone" id="profilePhone">+92 XXX XXXXXXX</p>
+            <div class="profile-badges" id="profileBadges">
+                <span class="badge" id="accountTypeBadge" style="background:#dfe6e9;color:#636e72;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">
+                    <i class="fas fa-user"></i> Basic
+                </span>
+            </div>
+            <!-- Upgrade button — only for basic users -->
+            <div id="profileUpgradeBtn" style="display:none; margin-top:12px;">
+                <button onclick="showModal('kycUpgrade')" style="background:linear-gradient(135deg,#6C5CE7,#a29bfe); color:#fff; border:none; border-radius:12px; padding:10px 24px; font-weight:700; font-size:14px; cursor:pointer;">
+                    <i class="fas fa-crown"></i> Upgrade to Verified
+                </button>
+            </div>
+        </div>
+
+        <div class="profile-stats">
+            <div class="stat-box">
+                <i class="fas fa-exchange-alt"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="profileTxCount">0</span>
+                    <span class="stat-label">Transactions</span>
+                </div>
+            </div>
+            <div class="stat-box">
+                <i class="fas fa-users"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="profileContactCount">0</span>
+                    <span class="stat-label">Contacts</span>
+                </div>
+            </div>
+            <div class="stat-box">
+                <i class="fas fa-trophy"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="profileTier">Gold</span>
+                    <span class="stat-label">Tier</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Limit Info Bar -->
+        <div id="profileLimitBar" style="margin:0 16px 16px; border-radius:14px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; background:#f0f0ff; border:1px solid #d8d5ff;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <i class="fas fa-tachometer-alt" style="color:#6C5CE7; font-size:16px;"></i>
+                <div>
+                    <div style="font-size:12px; color:#636e72;">Per Transaction Limit</div>
+                    <div style="font-weight:700; font-size:15px; color:#2d3436;" id="profileLimitValue">Rs 25,000</div>
+                </div>
+            </div>
+            <div id="profileLimitBadge" style="font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; background:#dfe6e9; color:#636e72;">BASIC</div>
+        </div>
+
+        <div class="profile-menu">
+            <div class="menu-item" onclick="showModal('personalInfo')">
+                <div class="menu-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="menu-content">
+                    <span class="menu-title">Personal Information</span>
+                    <span class="menu-subtitle">Update your details</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+
+            <div class="menu-item" onclick="showModal('security')">
+                <div class="menu-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="menu-content">
+                    <span class="menu-title">Security & Privacy</span>
+                    <span class="menu-subtitle">PIN, biometric, 2FA</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+
+            <div class="menu-item" onclick="showModal('notifications')">
+                <div class="menu-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="menu-content">
+                    <span class="menu-title">Notifications</span>
+                    <span class="menu-subtitle">Manage alerts</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+
+            <div class="menu-item" onclick="showModal('linkedAccounts')">
+                <div class="menu-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="menu-content">
+                    <span class="menu-title">Linked Accounts</span>
+                    <span class="menu-subtitle">Banks & cards</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+
+            <div class="menu-item" onclick="showModal('referral')">
+                <div class="menu-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <div class="menu-content">
+                    <span class="menu-title">Refer & Earn</span>
+                    <span class="menu-subtitle">Get Rs 500 per referral</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+
+            <div class="menu-item" onclick="showModal('help')">
+                <div class="menu-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="menu-content">
+                    <span class="menu-title">Help & Support</span>
+                    <span class="menu-subtitle">FAQs, contact us</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+
+            <div class="menu-item" onclick="logout()">
+                <div class="menu-icon danger">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <div class="menu-content">
+                    <span class="menu-title danger">Logout</span>
+                    <span class="menu-subtitle">Sign out of your account</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+
+        <div class="app-version">
+            <p>Paylance Version 2.5.0</p>
+        </div>
+    </div>
+
+    <!-- Modal for Transactions -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Transaction</h3>
+                <i class="fas fa-times close-modal" onclick="closeModal()"></i>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Animation -->
+    <div class="success-popup" id="successPopup">
+        <div class="success-content">
+            <div class="success-checkmark">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 id="successTitle">Success!</h3>
+            <p id="successMessage">Transaction completed successfully</p>
+        </div>
+    </div>
+    <!-- OTP Verification Modal -->
+<div id="otpModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%); z-index:99999; justify-content:center; align-items:center;">
+  <div style="background:#ffffff; border:2px solid #6c5ce7; border-radius:20px;
+              padding:32px 24px; width:92%; max-width:420px; text-align:center; color:white;
+              box-shadow: 0 20px 60px rgba(108,92,231,0.4);">
+    
+    <div style="font-size:52px; margin-bottom:12px;">📧</div>
+    <h2 style="color:#9790f9; margin:0 0 6px; font-size:22px;">Email Verification</h2>
+    <p style="color:#999a9a; font-size:13px; margin:0 0 6px;">6-digit OTP sent to</p>
+    <p style="color:#999a9a; font-weight:700; font-size:15px; margin:0 0 24px;" id="otpEmailDisplay"></p>
+
+    <!-- 6 OTP Input Boxes -->
+    <div style="display:flex; gap:8px; justify-content:center; margin-bottom:20px;">
+      <input type="text" inputmode="numeric" maxlength="1" id="otp1"
+        style="width:46px;height:54px;text-align:center;font-size:22px;font-weight:700;
+               background:#cecefd;border:2px solid #6c5ce7;border-radius:10px;
+               color:rgb(0, 0, 0);outline:none;transition:border 0.2s;"
+        oninput="otpMove(this,'otp2')" onkeydown="otpBack(event,'')">
+      <input type="text" inputmode="numeric" maxlength="1" id="otp2"
+        style="width:46px;height:54px;text-align:center;font-size:22px;font-weight:700;
+               background:#cecefd;border:2px solid #6c5ce7;border-radius:10px;
+               color:rgb(0, 0, 0);outline:none;transition:border 0.2s;"
+        oninput="otpMove(this,'otp3')" onkeydown="otpBack(event,'otp1')">
+      <input type="text" inputmode="numeric" maxlength="1" id="otp3"
+        style="width:46px;height:54px;text-align:center;font-size:22px;font-weight:700;
+               background:#cecefd;border:2px solid #6c5ce7;border-radius:10px;
+               color:rgb(0, 0, 0);outline:none;transition:border 0.2s;"
+        oninput="otpMove(this,'otp4')" onkeydown="otpBack(event,'otp2')">
+      <input type="text" inputmode="numeric" maxlength="1" id="otp4"
+        style="width:46px;height:54px;text-align:center;font-size:22px;font-weight:700;
+               background:#cecefd;border:2px solid #6c5ce7;border-radius:10px;
+               color:rgb(0, 0, 0);outline:none;transition:border 0.2s;"
+        oninput="otpMove(this,'otp5')" onkeydown="otpBack(event,'otp3')">
+      <input type="text" inputmode="numeric" maxlength="1" id="otp5"
+        style="width:46px;height:54px;text-align:center;font-size:22px;font-weight:700;
+               background:#cecefd;border:2px solid #6c5ce7;border-radius:10px;
+               color:rgb(0, 0, 0);outline:none;transition:border 0.2s;"
+        oninput="otpMove(this,'otp6')" onkeydown="otpBack(event,'otp4')">
+      <input type="text" inputmode="numeric" maxlength="1" id="otp6"
+        style="width:46px;height:54px;text-align:center;font-size:22px;font-weight:700;
+               background:#cecefd;border:2px solid #6c5ce7;border-radius:10px;
+               color:rgb(0, 0, 0);outline:none;transition:border 0.2s;"
+        oninput="otpMove(this,'')" onkeydown="otpBack(event,'otp5')">
+    </div>
+
+    <!-- Timer -->
+    <p id="otpTimerBox" style="color:#fdcb6e; font-size:13px; margin-bottom:20px;">
+      ⏱️ Expires in: <span id="timerCount" style="font-weight:700;">5:00</span>
+    </p>
+
+    <!-- Verify Button -->
+    <button onclick="verifyOtpAndRegister()"
+      style="width:100%;padding:14px;
+             background:linear-gradient(135deg,#6c5ce7,#a29bfe);
+             color:white;border:none;border-radius:12px;
+             font-size:16px;font-weight:700;cursor:pointer;
+             margin-bottom:10px;letter-spacing:0.5px;">
+      ✅ Verify & Create Account
+    </button>
+
+    <!-- Resend Button -->
+    <button onclick="resendOtpEmail()"
+      style="width:100%;padding:12px;background:transparent;
+             color:#a29bfe;border:1.5px solid #6c5ce7;
+             border-radius:12px;font-size:14px;cursor:pointer;
+             margin-bottom:10px;">
+      🔄 Resend OTP
+    </button>
+
+    <!-- Back Button -->
+    <button onclick="closeOtpModal()"
+      style="background:none;border:none;color:#636e72;
+             font-size:13px;cursor:pointer;margin-top:4px;">
+      ← Back to Registration
+    </button>
+  </div>
+</div>
+
+    <script src="static/script.js?v=2.1"></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('✅ PWA Service Worker registered:', reg.scope))
+                .catch(err => console.warn('SW registration failed:', err));
+        });
+    }
+
+    // PWA Install Prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Install button show karo
+        const installBtn = document.getElementById('pwaInstallBtn');
+        if (installBtn) installBtn.style.display = 'flex';
+    });
+
+    function installPWA() {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(choice => {
+            if (choice.outcome === 'accepted') {
+                console.log('PWA installed!');
+                const installBtn = document.getElementById('pwaInstallBtn');
+                if (installBtn) installBtn.style.display = 'none';
+            }
+            deferredPrompt = null;
+        });
+    }
+    </script>
+
+    <!-- PWA Install Button (top pe show hoga — kisi se overlap nahi) -->
+    <div id="pwaInstallBtn" onclick="installPWA()" style="
+        display: none;
+        position: fixed;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #6C5CE7, #A29BFE);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        z-index: 9999;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 20px rgba(108,92,231,0.4);
+        white-space: nowrap;
+    ">
+        <i class="fas fa-download"></i>
+        <span>Install Paylance App</span>
+    </div>
+
+    <!-- ============ SMART SPENDING INSIGHTS ============ -->
+    <div id="insightsBtn" onclick="toggleInsights()" title="Spending Insights">
+        <i class="fas fa-chart-pie"></i>
+        <span class="insights-badge" id="insightsBadge">!</span>
+    </div>
+
+    <div id="insightsPanel">
+        <div id="insightsPanelHeader">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:16px">📊</div>
+                <div>
+                    <div style="font-weight:700;font-size:14px">Smart Spending Insights</div>
+                    <div style="font-size:11px;opacity:0.75" id="insightsMonth"></div>
+                </div>
+            </div>
+            <i class="fas fa-times" onclick="toggleInsights()" style="cursor:pointer;font-size:16px;opacity:0.8"></i>
+        </div>
+        <div id="insightsPanelBody"></div>
+    </div>
+
+    <style>
+        #insightsBtn {
+            position: fixed;
+            bottom: 160px;
+            right: 20px;
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: #fff;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 9997;
+            box-shadow: 0 4px 20px rgba(0,184,148,0.5);
+            transition: transform 0.2s;
+        }
+        #insightsBtn.visible { display: flex; }
+        #insightsBtn:hover { transform: scale(1.1); }
+        .insights-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            background: #fdcb6e;
+            color: #2d3436;
+            border-radius: 50%;
+            width: 18px; height: 18px;
+            font-size: 11px;
+            font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #insightsPanel {
+            position: fixed;
+            bottom: 230px;
+            right: 16px;
+            width: 300px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+            display: none;
+            flex-direction: column;
+            z-index: 9998;
+            overflow: hidden;
+            max-height: 480px;
+        }
+        #insightsPanel.open { display: flex; }
+        #insightsPanelHeader {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: #fff;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #insightsPanelBody {
+            padding: 14px;
+            overflow-y: auto;
+            max-height: 380px;
+        }
+        .insight-bar-row {
+            margin-bottom: 12px;
+        }
+        .insight-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #555;
+        }
+        .insight-bar-track {
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .insight-bar-fill {
+            height: 8px;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.8s ease;
+        }
+        .insight-tip {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #2d3436;
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .insight-alert {
+            background: linear-gradient(135deg, #ff7675, #d63031);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #fff;
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .insight-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .insight-summary-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        .insight-summary-card .val {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2d3436;
+        }
+        .insight-summary-card .lbl {
+            font-size: 10px;
+            color: #999;
+            margin-top: 2px;
+        }
+    </style>
+
+    <script>
+    const categoryColors = {
+        'Send':        '#1a237e',
+        'Bills':       '#0d3b6e',
+        'Recharge':    '#1b5e20',
+        'Add Money':   '#004d40',
+        'Other':       '#37474f'
+    };
+
+    function categorizeTxn(t) {
+        if (t.type === 'received') return null;
+        const title = (t.title || '').toLowerCase();
+        if (title.includes('bill') || title.includes('electricity') || title.includes('gas') || title.includes('internet') || title.includes('water')) return 'Bills';
+        if (title.includes('recharge') || title.includes('mobile')) return 'Recharge';
+        if (t.type === 'sent') return 'Send';
+        return 'Other';
+    }
+
+    function buildInsights() {
+        const now = new Date();
+        const monthTxns = (typeof transactions !== 'undefined' ? transactions : []).filter(t => {
+            const d = new Date(t.date);
+            return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() && t.type !== 'received';
+        });
+
+        const totals = { Send: 0, Bills: 0, Recharge: 0, Other: 0 };
+        monthTxns.forEach(t => {
+            const cat = categorizeTxn(t);
+            if (cat) totals[cat] += t.amount;
+        });
+
+        const totalSpent = Object.values(totals).reduce((a, b) => a + b, 0);
+        const budget     = typeof monthlyBudget !== 'undefined' ? monthlyBudget : 50000;
+        const budgetPct  = totalSpent > 0 ? Math.round((totalSpent / budget) * 100) : 0;
+
+        // Top category
+        const topCat = Object.entries(totals).sort((a, b) => b[1] - a[1])[0];
+
+        // Tips
+        const tips = [
+            topCat && topCat[1] > 0 ? `💡 You spend most on <b>${topCat[0]}</b> this month (Rs ${topCat[1].toLocaleString()}).` : null,
+            budgetPct >= 80 ? null : `💡 You've used <b>${budgetPct}%</b> of your monthly budget. Good job!`,
+            totals['Bills'] > 10000 ? `💡 Your bill payments are high. Consider setting up reminders.` : null,
+        ].filter(Boolean);
+
+        const body = document.getElementById('insightsPanelBody');
+        const monthName = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+        document.getElementById('insightsMonth').textContent = monthName;
+
+        let html = `<div class="insight-summary">
+            <div class="insight-summary-card">
+                <div class="val">Rs ${totalSpent.toLocaleString()}</div>
+                <div class="lbl">Total Spent</div>
+            </div>
+            <div class="insight-summary-card">
+                <div class="val" style="color:${budgetPct >= 80 ? '#d63031' : '#00b894'}">${budgetPct}%</div>
+                <div class="lbl">Budget Used</div>
+            </div>
+            <div class="insight-summary-card">
+                <div class="val">${monthTxns.length}</div>
+                <div class="lbl">Transactions</div>
+            </div>
+            <div class="insight-summary-card">
+                <div class="val">Rs ${(budget - totalSpent).toLocaleString()}</div>
+                <div class="lbl">Remaining</div>
+            </div>
+        </div>`;
+
+        html += `<div style="font-size:12px;font-weight:700;color:#999;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Breakdown</div>`;
+
+        Object.entries(totals).forEach(([cat, amt]) => {
+            if (amt === 0) return;
+            const pct = totalSpent > 0 ? Math.round((amt / totalSpent) * 100) : 0;
+            html += `<div class="insight-bar-row">
+                <div class="insight-bar-label">
+                    <span>${cat}</span>
+                    <span style="font-weight:600">Rs ${amt.toLocaleString()} <span style="color:#aaa">(${pct}%)</span></span>
+                </div>
+                <div class="insight-bar-track">
+                    <div class="insight-bar-fill" style="background:${categoryColors[cat]}" data-width="${pct}"></div>
+                </div>
+            </div>`;
+        });
+
+        if (budgetPct >= 80) {
+            html += `<div class="insight-alert"><span>⚠️</span><span>You've used <b>${budgetPct}%</b> of your budget! Slow down on spending.</span></div>`;
+        }
+
+        if (tips[0]) {
+            html += `<div class="insight-tip"><span>💡</span><span>${tips[0]}</span></div>`;
+        }
+
+        if (totalSpent === 0) {
+            html = `<div style="text-align:center;padding:30px 0;color:#aaa">
+                <i class="fas fa-chart-pie" style="font-size:40px;margin-bottom:10px;display:block"></i>
+                No spending data yet this month.<br>Make a transaction to see insights!
+            </div>`;
+        }
+
+        body.innerHTML = html;
+
+        // Animate bars after render
+        setTimeout(() => {
+            body.querySelectorAll('.insight-bar-fill').forEach(el => {
+                el.style.width = el.dataset.width + '%';
+            });
+        }, 100);
+    }
+
+    function toggleInsights() {
+        const panel = document.getElementById('insightsPanel');
+        const isOpen = panel.classList.toggle('open');
+        if (isOpen) {
+            document.getElementById('insightsBadge').style.display = 'none';
+            buildInsights();
+        }
+    }
+
+    function showInsightsHint() {
+        const btn = document.getElementById('insightsBtn');
+        btn.classList.add('visible');
+        document.getElementById('insightsBadge').style.display = 'flex';
+    }
+    </script>
+    <div id="chatbotBtn" onclick="toggleChatbot()" title="Help">
+        <i class="fas fa-comment-dots"></i>
+        <span class="chat-badge" id="chatBadge">1</span>
+    </div>
+
+    <div id="chatbotBox">
+        <div id="chatbotHeader">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:18px">🤖</div>
+                <div>
+                    <div style="font-weight:700;font-size:15px">Paylance Assistant</div>
+                    <div style="font-size:11px;opacity:0.8">● Online</div>
+                </div>
+            </div>
+            <i class="fas fa-times" onclick="toggleChatbot()" style="cursor:pointer;font-size:18px;opacity:0.8"></i>
+        </div>
+
+        <div id="chatbotMessages"></div>
+
+        <div id="chatbotSuggestions">
+            <button onclick="askBot('How to send money?')">Send Money</button>
+            <button onclick="askBot('How to check balance?')">Balance</button>
+            <button onclick="askBot('How to pay a bill?')">Bill Pay</button>
+            <button onclick="askBot('I forgot my PIN')">Forgot PIN</button>
+            <button onclick="askBot('How to create an account?')">Register</button>
+            <button onclick="askBot('How to download a receipt?')">Receipt</button>
+        </div>
+
+        <div id="chatbotInput">
+            <input type="text" id="chatInput" placeholder="Ask something..." onkeydown="if(event.key==='Enter') sendChat()">
+            <button onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <style>
+        #chatbotBtn {
+            position: fixed;
+            bottom: 90px;
+            right: 16px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: #fff;
+            display: none; /* login page par hidden, dashboard par JS se show hoga */
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 9998;
+            box-shadow: 0 4px 20px rgba(102,126,234,0.5);
+            transition: transform 0.2s;
+        }
+        #chatbotBtn:hover { transform: scale(1.1); }
+        .chat-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            background: #d63031;
+            color: #fff;
+            border-radius: 50%;
+            width: 18px; height: 18px;
+            font-size: 11px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700;
+        }
+        #chatbotBox {
+            position: fixed;
+            bottom: 155px;
+            right: 16px;
+            width: 320px;
+            max-height: 480px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+            display: none;
+            flex-direction: column;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        #chatbotBox.open { display: flex; }
+        #chatbotHeader {
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: #fff;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #chatbotMessages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 200px;
+            max-height: 260px;
+        }
+        .chat-msg {
+            max-width: 82%;
+            padding: 10px 13px;
+            border-radius: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+        .chat-msg.bot {
+            background: #f0f0ff;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-msg.user {
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        #chatbotSuggestions {
+            padding: 8px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            border-top: 1px solid #f0f0f0;
+        }
+        #chatbotSuggestions button {
+            background: #f0f0ff;
+            color: #667EEA;
+            border: 1px solid #667EEA;
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #chatbotSuggestions button:hover { background: #667EEA; color: #fff; }
+        #chatbotInput {
+            display: flex;
+            padding: 10px 12px;
+            gap: 8px;
+            border-top: 1px solid #f0f0f0;
+        }
+        #chatInput {
+            flex: 1;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 8px 14px;
+            font-size: 13px;
+            outline: none;
+        }
+        #chatInput:focus { border-color: #667EEA; }
+        #chatbotInput button {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+
+    <script>
+    const botReplies = [
+        {
+            keys: ['send money','transfer','how to send','send'],
+            reply: `💸 <b>How to Send Money:</b><br>
+1. Tap the <b>Send</b> button on the dashboard<br>
+2. Enter the recipient's mobile number (03XXXXXXXXX)<br>
+3. Enter the amount<br>
+4. Add a purpose (optional)<br>
+5. Press <b>Send Money</b><br><br>
+A receipt will be generated automatically! ✅`
+        },
+        {
+            keys: ['balance','check balance','how much','remaining'],
+            reply: `💰 <b>How to Check Balance:</b><br>
+Your balance is shown on the <b>Total Balance</b> card at the top of the dashboard.<br><br>
+👁️ Tap the <b>eye icon</b> to show or hide your balance.<br>
+Log out and log back in to refresh your balance.`
+        },
+        {
+            keys: ['bill','electricity','gas','internet','water','utility','pay bill'],
+            reply: `📄 <b>How to Pay a Bill:</b><br>
+1. Tap <b>Bills</b> on the dashboard<br>
+2. Select bill type (Electricity, Gas, Internet, Water)<br>
+3. Enter your consumer number<br>
+4. Enter the amount<br>
+5. Press <b>Pay Bill</b><br><br>
+A receipt will be generated automatically! ✅`
+        },
+        {
+            keys: ['pin','forgot','reset pin','change pin','lost pin'],
+            reply: `🔐 <b>Reset or Change PIN:</b><br>
+<b>Forgot PIN:</b><br>
+1. On the login page, tap <b>Forgot PIN?</b><br>
+2. Enter your mobile number and CNIC<br>
+3. Enter your date of birth<br>
+4. Set a new PIN<br><br>
+<b>Change PIN (while logged in):</b><br>
+Profile → Security & Privacy → Change PIN`
+        },
+        {
+            keys: ['register','create account','sign up','new account','how to register'],
+            reply: `👤 <b>How to Create an Account:</b><br>
+1. On the login page, tap <b>Create Account</b><br>
+2. Fill in your Name, Mobile, CNIC, Email, and PIN<br>
+3. An OTP will be sent to your email — verify it<br>
+4. Your account will be created with Rs 25,000 starting balance! 🎉`
+        },
+        {
+            keys: ['receipt','download','pdf','proof','transaction proof'],
+            reply: `🧾 <b>How to Download a Receipt:</b><br>
+After every transaction (Send, Bill, Recharge, Add Money), a receipt modal appears automatically.<br><br>
+Tap <b>Download Receipt</b> → In the print dialog, select <b>Save as PDF</b> → Save! ✅`
+        },
+        {
+            keys: ['recharge','mobile load','top up','load'],
+            reply: `📱 <b>How to Recharge Mobile:</b><br>
+1. Tap <b>Recharge</b> on the dashboard<br>
+2. Enter the mobile number<br>
+3. Select a package (Rs 100 / 200 / 500 / 1000)<br>
+4. Press <b>Recharge</b> ✅`
+        },
+        {
+            keys: ['add money','deposit','add cash','add funds','bank transfer'],
+            reply: `➕ <b>How to Add Money:</b><br>
+1. Tap <b>Add Cash</b> on the dashboard<br>
+2. Select a method (Bank Transfer / Card / Agent)<br>
+3. Enter the amount<br>
+4. Press <b>Add Money</b> ✅`
+        },
+        {
+            keys: ['cashback','points','reward','redeem'],
+            reply: `🎁 <b>Cashback & Rewards:</b><br>
+You earn <b>1 point per Rs 100</b> spent on every transaction.<br><br>
+<b>How to redeem:</b><br>
+Profile → Rewards → 100 points = Rs 10 cash back<br>
+Minimum 100 points required to redeem.`
+        },
+        {
+            keys: ['goal','saving','savings','financial goal','target'],
+            reply: `🎯 <b>Financial Goals:</b><br>
+You can set savings goals from the dashboard.<br><br>
+1. Set a goal name, target amount, and deadline<br>
+2. Add money towards it over time<br>
+3. Track your progress anytime ✅`
+        },
+        {
+            keys: ['logout','sign out','exit','log out'],
+            reply: `👋 <b>How to Logout:</b><br>
+Go to the <b>Profile</b> page and scroll down to find the <b>Logout</b> button.<br>
+Confirm and you'll be signed out safely.`
+        },
+        {
+            keys: ['help','problem','issue','not working','error','support','contact'],
+            reply: `🆘 <b>Help & Support:</b><br>
+Go to Profile → Help & Support for contact details.<br><br>
+📞 Call: +92 300 1234567<br>
+📧 Email: support@paylance.com<br><br>
+Or just ask me — I'm here to help! 😊`
+        },
+        {
+            keys: ['hello','hi','hey','good morning','good evening','greetings'],
+            reply: `👋 Hello! I'm the <b>Paylance Assistant</b>.<br><br>
+I can help you with:<br>
+• Sending money<br>
+• Paying bills<br>
+• Creating an account<br>
+• Resetting your PIN<br>
+• Downloading receipts<br><br>
+What do you need help with? 😊`
+        },
+        {
+            keys: ['thanks','thank you','great','awesome','perfect','good'],
+            reply: `😊 You're welcome! Happy to help.<br>Feel free to ask anytime. Banking with Paylance is easy! 💜`
+        }
+    ];
+
+    function getBotReply(msg) {
+        const lower = msg.toLowerCase();
+        for (const item of botReplies) {
+            if (item.keys.some(k => lower.includes(k))) return item.reply;
+        }
+        return `🤔 I'm not sure I understood that.<br><br>
+You can ask me things like:<br>
+• "How to send money?"<br>
+• "How to pay a bill?"<br>
+• "I forgot my PIN"<br>
+• "How to download a receipt?"<br><br>
+Or use the quick buttons below 👇`;
+    }
+
+    function toggleChatbot() {
+        const box   = document.getElementById('chatbotBox');
+        const badge = document.getElementById('chatBadge');
+        const isOpen = box.classList.toggle('open');
+        if (isOpen) {
+            badge.style.display = 'none';
+            if (document.getElementById('chatbotMessages').children.length === 0) {
+                addBotMsg(`👋 Hi! I'm the <b>Paylance Assistant</b>.<br>How can I help you today? Tap a button below or type your question! 😊`);
+            }
+        }
+    }
+
+    function addBotMsg(text) {
+        const el = document.createElement('div');
+        el.className = 'chat-msg bot';
+        el.innerHTML = text;
+        document.getElementById('chatbotMessages').appendChild(el);
+        scrollChat();
+    }
+
+    function addUserMsg(text) {
+        const el = document.createElement('div');
+        el.className = 'chat-msg user';
+        el.textContent = text;
+        document.getElementById('chatbotMessages').appendChild(el);
+        scrollChat();
+    }
+
+    function scrollChat() {
+        const msgs = document.getElementById('chatbotMessages');
+        msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function askBot(question) {
+        addUserMsg(question);
+        setTimeout(() => addBotMsg(getBotReply(question)), 400);
+    }
+
+    function sendChat() {
+        const input = document.getElementById('chatInput');
+        const msg   = input.value.trim();
+        if (!msg) return;
+        input.value = '';
+        addUserMsg(msg);
+        setTimeout(() => addBotMsg(getBotReply(msg)), 400);
+    }
+    </script>
+</body>
+</html>

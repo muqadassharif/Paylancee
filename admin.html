@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paylance Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #6c63ff;
+    --primary-dark: #574fd6;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --bg: #0f0f1a;
+    --card: #1a1a2e;
+    --card2: #16213e;
+    --border: #2a2a45;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --sidebar-w: 240px;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ---- AUTH SCREEN ---- */
+  #authScreen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 60% 40%, #1a1a3e 0%, #0f0f1a 70%);
+  }
+  .auth-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 420px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  }
+  .auth-logo { text-align: center; margin-bottom: 32px; }
+  .auth-logo i { font-size: 48px; color: var(--primary); }
+  .auth-logo h1 { font-size: 26px; font-weight: 700; margin-top: 10px; }
+  .auth-logo p { color: var(--text2); font-size: 14px; margin-top: 4px; }
+  .auth-tabs { display: flex; gap: 8px; margin-bottom: 28px; background: var(--bg); border-radius: 10px; padding: 4px; }
+  .auth-tab {
+    flex: 1; padding: 8px; border: none; background: transparent; color: var(--text2);
+    border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all .2s;
+  }
+  .auth-tab.active { background: var(--primary); color: #fff; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+  .form-group input {
+    width: 100%; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); font-size: 14px; outline: none; transition: border .2s;
+  }
+  .form-group input:focus { border-color: var(--primary); }
+  .btn-primary {
+    width: 100%; padding: 13px; background: var(--primary); color: #fff; border: none;
+    border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background .2s;
+  }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .auth-msg { margin-top: 14px; padding: 10px 14px; border-radius: 8px; font-size: 13px; text-align: center; display: none; }
+  .auth-msg.ok  { background: rgba(34,197,94,.15); color: var(--success); display: block; }
+  .auth-msg.err { background: rgba(239,68,68,.15); color: var(--danger); display: block; }
+
+  /* ---- MAIN APP ---- */
+  #app { display: none; }
+  .layout { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: var(--sidebar-w); background: var(--card); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100;
+  }
+  .sidebar-logo {
+    padding: 24px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .sidebar-logo i { font-size: 28px; color: var(--primary); }
+  .sidebar-logo span { font-size: 18px; font-weight: 700; }
+  .sidebar-logo small { display: block; font-size: 11px; color: var(--text2); font-weight: 400; }
+  nav { flex: 1; padding: 16px 12px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+    border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500;
+    color: var(--text2); transition: all .2s; margin-bottom: 4px; border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: rgba(108,99,255,.1); color: var(--text); }
+  .nav-item.active { background: rgba(108,99,255,.2); color: var(--primary); }
+  .nav-item i { width: 18px; text-align: center; }
+  .sidebar-footer {
+    padding: 16px 12px; border-top: 1px solid var(--border);
+  }
+  .admin-badge {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    background: var(--bg); border-radius: 10px; margin-bottom: 10px;
+  }
+  .admin-avatar {
+    width: 32px; height: 32px; background: var(--primary); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700;
+  }
+  .admin-info span { display: block; font-size: 13px; font-weight: 600; }
+  .admin-info small { font-size: 11px; color: var(--text2); }
+  .btn-logout {
+    width: 100%; padding: 9px; background: rgba(239,68,68,.1); color: var(--danger);
+    border: 1px solid rgba(239,68,68,.2); border-radius: 8px; cursor: pointer; font-size: 13px;
+    font-weight: 500; transition: all .2s;
+  }
+  .btn-logout:hover { background: rgba(239,68,68,.2); }
+
+  /* Main content */
+  .main { margin-left: var(--sidebar-w); flex: 1; padding: 28px; min-height: 100vh; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .page-header { margin-bottom: 28px; }
+  .page-header h2 { font-size: 22px; font-weight: 700; }
+  .page-header p { color: var(--text2); font-size: 14px; margin-top: 4px; }
+
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px; position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--accent, var(--primary));
+  }
+  .stat-icon {
+    width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center;
+    justify-content: center; font-size: 18px; margin-bottom: 14px;
+    background: var(--icon-bg, rgba(108,99,255,.15)); color: var(--accent, var(--primary));
+  }
+  .stat-value { font-size: 26px; font-weight: 700; line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
+  .stat-sub { font-size: 12px; color: var(--text2); margin-top: 8px; }
+  .stat-sub span { color: var(--success); font-weight: 600; }
+
+  /* Table */
+  .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .table-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .table-header h3 { font-size: 15px; font-weight: 600; flex: 1; }
+  .search-box {
+    display: flex; align-items: center; gap: 8px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px;
+  }
+  .search-box input { background: none; border: none; color: var(--text); outline: none; font-size: 13px; width: 180px; }
+  .search-box i { color: var(--text2); font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,.02); }
+  td { padding: 13px 16px; font-size: 13px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  }
+  .badge-sent     { background: rgba(239,68,68,.15);   color: #f87171; }
+  .badge-received { background: rgba(34,197,94,.15);   color: #4ade80; }
+  .badge-bill     { background: rgba(245,158,11,.15);  color: #fbbf24; }
+
+  /* Action buttons */
+  .btn-sm {
+    padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+    cursor: pointer; border: none; transition: all .2s;
+  }
+  .btn-edit   { background: rgba(108,99,255,.15); color: var(--primary); }
+  .btn-edit:hover { background: rgba(108,99,255,.3); }
+  .btn-del    { background: rgba(239,68,68,.15); color: var(--danger); }
+  .btn-del:hover { background: rgba(239,68,68,.3); }
+  .btn-view   { background: rgba(34,197,94,.12); color: var(--success); }
+  .btn-view:hover { background: rgba(34,197,94,.25); }
+  .btn-bal    { background: rgba(245,158,11,.12); color: var(--warning); }
+  .btn-bal:hover { background: rgba(245,158,11,.25); }
+
+  /* Pagination */
+  .pagination { display: flex; align-items: center; gap: 8px; padding: 16px 20px; border-top: 1px solid var(--border); }
+  .pagination button {
+    padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg);
+    color: var(--text); cursor: pointer; font-size: 13px; transition: all .2s;
+  }
+  .pagination button:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+  .pagination button:disabled { opacity: .4; cursor: not-allowed; }
+  .pagination button.curr { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .pagination span { color: var(--text2); font-size: 13px; margin: 0 6px; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 999;
+    display: none; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 28px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+  }
+  .modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-cancel-modal {
+    flex: 1; padding: 10px; background: var(--bg); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500;
+  }
+  .btn-confirm-modal {
+    flex: 1; padding: 10px; background: var(--primary); color: #fff; border: none;
+    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+  }
+  .btn-danger-modal {
+    flex: 1; padding: 10px; background: var(--danger); color: #fff; border: none;
+    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+  }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+    padding: 13px 20px; border-radius: 10px; font-size: 14px; font-weight: 500;
+    display: none; align-items: center; gap: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.4); min-width: 240px;
+  }
+  #toast.show { display: flex; animation: slideUp .3s ease; }
+  #toast.ok  { background: var(--card); border: 1px solid var(--success); color: var(--success); }
+  #toast.err { background: var(--card); border: 1px solid var(--danger); color: var(--danger); }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* Refresh btn */
+  .btn-refresh {
+    padding: 8px 14px; background: rgba(108,99,255,.15); color: var(--primary); border: none;
+    border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px;
+  }
+  .btn-refresh:hover { background: rgba(108,99,255,.3); }
+
+  /* Loading */
+  .loading { text-align: center; padding: 40px; color: var(--text2); }
+  .loading i { font-size: 28px; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Tx list in modal */
+  .tx-list { max-height: 360px; overflow-y: auto; }
+  .tx-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .tx-item:last-child { border-bottom: none; }
+  .tx-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .tx-sent     { background: rgba(239,68,68,.15); color: #f87171; }
+  .tx-received { background: rgba(34,197,94,.15);  color: #4ade80; }
+  .tx-bill     { background: rgba(245,158,11,.15); color: #fbbf24; }
+  .tx-info { flex: 1; }
+  .tx-info span { display: block; font-size: 13px; font-weight: 500; }
+  .tx-info small { font-size: 11px; color: var(--text2); }
+  .tx-amount { font-size: 14px; font-weight: 700; }
+  .tx-amount.neg { color: #f87171; }
+  .tx-amount.pos { color: #4ade80; }
+
+  /* Empty */
+  .empty { text-align: center; padding: 48px 20px; color: var(--text2); }
+  .empty i { font-size: 36px; margin-bottom: 10px; display: block; }
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <i class="fas fa-shield-halved"></i>
+      <h1>Paylance Admin</h1>
+      <p>Control panel for administrators</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab" onclick="switchTab('setup')">First Time Setup</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="admin" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>
+      <div id="loginMsg" class="auth-msg"></div>
+    </div>
+
+    <!-- Setup Form -->
+    <div id="setupForm" style="display:none">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">
+        <i class="fas fa-info-circle" style="color:var(--warning)"></i>
+        Pehli baar admin account banana ho toh yahan se karo. Ek baar ban jaye toh yeh option kaam nahi karega.
+      </p>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="setupUser" placeholder="Choose a username">
+      </div>
+      <div class="form-group">
+        <label>Password (min 6 chars)</label>
+        <input type="password" id="setupPass" placeholder="Choose a strong password">
+      </div>
+      <button class="btn-primary" onclick="doSetup()">
+        <i class="fas fa-user-shield"></i> Create Admin Account
+      </button>
+      <div id="setupMsg" class="auth-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i class="fas fa-shield-halved"></i>
+        <div>
+          <span>Paylance</span>
+          <small>Admin Panel</small>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-item active" onclick="showPage('dashboard')">
+          <i class="fas fa-chart-pie"></i> Dashboard
+        </button>
+        <button class="nav-item" onclick="showPage('users')">
+          <i class="fas fa-users"></i> Users
+        </button>
+        <button class="nav-item" onclick="showPage('kyc')">
+          <i class="fas fa-id-card"></i> KYC Requests
+          <span id="kycBadge" style="margin-left:auto;background:var(--warning);color:#000;border-radius:20px;padding:1px 7px;font-size:11px;font-weight:700;display:none">0</span>
+        </button>
+        <button class="nav-item" onclick="showPage('suspicious')">
+          <i class="fas fa-shield-exclamation"></i> Suspicious Activity
+          <span id="suspBadge" style="margin-left:auto;background:var(--danger);color:#fff;border-radius:20px;padding:1px 7px;font-size:11px;font-weight:700;display:none">0</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="admin-badge">
+          <div class="admin-avatar" id="adminAvatar">A</div>
+          <div class="admin-info">
+            <span id="adminName">Admin</span>
+            <small>Administrator</small>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- DASHBOARD PAGE -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <h2>Dashboard</h2>
+          <p>Real-time overview of Paylance platform</p>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+          <div class="loading"><i class="fas fa-spinner"></i></div>
+        </div>
+
+        <div class="table-card" style="margin-top:0">
+          <div class="table-header">
+            <h3><i class="fas fa-users" style="color:var(--primary);margin-right:8px"></i>Recent Users</h3>
+            <button class="btn-refresh" onclick="loadDashboard()"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+          <div id="recentUsersTable"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+        </div>
+      </div>
+
+      <!-- USERS PAGE -->
+      <div class="page" id="page-users">
+        <div class="page-header">
+          <h2>User Management</h2>
+          <p>Search, edit, manage all registered users</p>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">
+            <h3><i class="fas fa-users" style="color:var(--primary);margin-right:8px"></i>All Users</h3>
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="userSearch" placeholder="Search name, mobile, email..." oninput="searchUsers()">
+            </div>
+            <button class="btn-refresh" onclick="loadUsers(1)"><i class="fas fa-sync-alt"></i></button>
+          </div>
+          <div id="usersTable"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+
+      <!-- KYC PAGE -->
+      <div class="page" id="page-kyc">
+        <div class="page-header">
+          <h2>KYC Requests</h2>
+          <p>Review and approve or reject user KYC submissions</p>
+        </div>
+        <div class="table-card">
+          <div class="table-header">
+            <h3><i class="fas fa-id-card" style="color:var(--warning);margin-right:8px"></i>KYC Submissions</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="kycFilter" onchange="loadKyc()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 12px;font-size:13px;outline:none">
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="">All</option>
+              </select>
+              <button class="btn-refresh" onclick="loadKyc()"><i class="fas fa-sync-alt"></i></button>
+            </div>
+          </div>
+          <div id="kycTable"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+        </div>
+      </div>
+
+      <!-- SUSPICIOUS ACTIVITY PAGE -->
+      <div class="page" id="page-suspicious">
+        <div class="page-header">
+          <h2>Suspicious Activity</h2>
+          <p>Flagged transactions and unusual account behavior</p>
+        </div>
+        <div class="table-card">
+          <div class="table-header">
+            <h3><i class="fas fa-shield-exclamation" style="color:var(--danger);margin-right:8px"></i>Activity Flags</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="suspFilter" onchange="loadSuspicious()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 12px;font-size:13px;outline:none">
+                <option value="unresolved">Unresolved</option>
+                <option value="resolved">Resolved</option>
+                <option value="">All</option>
+              </select>
+              <button class="btn-refresh" onclick="loadSuspicious()"><i class="fas fa-sync-alt"></i></button>
+            </div>
+          </div>
+          <div id="suspTable"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODALS -->
+
+<!-- Edit User Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3><i class="fas fa-user-edit" style="color:var(--primary)"></i> Edit User</h3>
+    <input type="hidden" id="editMobile">
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="editName" placeholder="Full name">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="editEmail" placeholder="email@example.com">
+    </div>
+    <div class="form-group">
+      <label>CNIC</label>
+      <input type="text" id="editCnic" placeholder="13-digit CNIC" maxlength="13">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeModal('editModal')">Cancel</button>
+      <button class="btn-confirm-modal" onclick="saveUserEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Balance Modal -->
+<div class="modal-overlay" id="balanceModal">
+  <div class="modal">
+    <h3><i class="fas fa-wallet" style="color:var(--warning)"></i> Adjust Balance</h3>
+    <input type="hidden" id="balMobile">
+    <p id="balCurrentInfo" style="color:var(--text2);font-size:13px;margin-bottom:16px;"></p>
+    <div class="form-group">
+      <label>Amount (positive = add, negative = deduct)</label>
+      <input type="number" id="balAmount" placeholder="e.g. 500 or -200">
+    </div>
+    <div class="form-group">
+      <label>Note (optional)</label>
+      <input type="text" id="balNote" placeholder="e.g. Bonus credit, Penalty deduction...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeModal('balanceModal')">Cancel</button>
+      <button class="btn-confirm-modal" onclick="saveBalance()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <h3><i class="fas fa-trash" style="color:var(--danger)"></i> Delete User</h3>
+    <input type="hidden" id="deleteMobile">
+    <p id="deleteInfo" style="color:var(--text2);font-size:14px;line-height:1.6;"></p>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn-danger-modal" onclick="confirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Transactions Modal -->
+<div class="modal-overlay" id="txModal">
+  <div class="modal" style="max-width:540px">
+    <h3 id="txModalTitle"><i class="fas fa-receipt" style="color:var(--success)"></i> Transactions</h3>
+    <div class="tx-list" id="txList"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeModal('txModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- KYC Detail Modal -->
+<div class="modal-overlay" id="kycDetailModal">
+  <div class="modal" style="max-width:560px">
+    <h3><i class="fas fa-id-card" style="color:var(--warning)"></i> KYC Details</h3>
+    <div id="kycDetailContent"></div>
+    <div class="modal-actions" id="kycDetailActions"></div>
+  </div>
+</div>
+
+<!-- KYC Reject Reason Modal -->
+<div class="modal-overlay" id="kycRejectModal">
+  <div class="modal" style="max-width:420px">
+    <h3><i class="fas fa-times-circle" style="color:var(--danger)"></i> Reject KYC</h3>
+    <input type="hidden" id="rejectMobile">
+    <div class="form-group">
+      <label>Rejection Reason</label>
+      <input type="text" id="rejectReason" placeholder="e.g. Documents unclear, CNIC expired...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeModal('kycRejectModal')">Cancel</button>
+      <button class="btn-danger-modal" onclick="confirmRejectKyc()">Reject KYC</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+const API = '/api';
+let adminToken = localStorage.getItem('adminToken') || null;
+let adminUsername = localStorage.getItem('adminUsername') || '';
+let currentPage = 1;
+let searchTimeout = null;
+
+// ===================== AUTH =====================
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0 && tab==='login') || (i===1 && tab==='setup')));
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('setupForm').style.display = tab === 'setup' ? 'block' : 'none';
+}
+
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const msg = document.getElementById('loginMsg');
+  msg.className = 'auth-msg';
+
+  if (!username || !password) { msg.className='auth-msg err'; msg.textContent='Enter username and password!'; return; }
+
+  try {
+    const res = await fetch(`${API}/admin/login`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      adminToken = data.token;
+      adminUsername = data.username;
+      localStorage.setItem('adminToken', adminToken);
+      localStorage.setItem('adminUsername', adminUsername);
+      enterApp();
+    } else {
+      msg.className = 'auth-msg err';
+      msg.textContent = '❌ ' + data.message;
+    }
+  } catch { msg.className='auth-msg err'; msg.textContent='❌ Cannot connect to server!'; }
+}
+
+async function doSetup() {
+  const username = document.getElementById('setupUser').value.trim();
+  const password = document.getElementById('setupPass').value;
+  const msg = document.getElementById('setupMsg');
+
+  try {
+    const res = await fetch(`${API}/admin/setup`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    msg.className = res.ok ? 'auth-msg ok' : 'auth-msg err';
+    msg.textContent = (res.ok ? '✅ ' : '❌ ') + data.message;
+    if (res.ok) setTimeout(() => switchTab('login'), 1800);
+  } catch { msg.className='auth-msg err'; msg.textContent='❌ Cannot connect!'; }
+}
+
+function enterApp() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('adminName').textContent = adminUsername;
+  document.getElementById('adminAvatar').textContent = adminUsername[0].toUpperCase();
+  loadDashboard();
+  loadBadges();
+}
+
+function doLogout() {
+  localStorage.removeItem('adminToken');
+  localStorage.removeItem('adminUsername');
+  adminToken = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginMsg').className = 'auth-msg';
+}
+
+// Check if already logged in
+window.addEventListener('DOMContentLoaded', () => {
+  if (adminToken) enterApp();
+});
+
+// ===================== API HELPER =====================
+async function api(method, path, body) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API + path, opts);
+  const data = await res.json();
+  if (res.status === 401) { doLogout(); return { ok: false, data: { message: 'Session expired' } }; }
+  return { ok: res.ok, data };
+}
+
+// ===================== NAVIGATION =====================
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`page-${name}`).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'dashboard')  loadDashboard();
+  if (name === 'users')      loadUsers(1);
+  if (name === 'kyc')        loadKyc();
+  if (name === 'suspicious') loadSuspicious();
+}
+
+// ===================== DASHBOARD =====================
+async function loadDashboard() {
+  document.getElementById('statsGrid').innerHTML = '<div class="loading"><i class="fas fa-spinner"></i></div>';
+  document.getElementById('recentUsersTable').innerHTML = '<div class="loading"><i class="fas fa-spinner"></i></div>';
+
+  const { ok, data } = await api('GET', '/admin/stats');
+  if (!ok) { showToast('Failed to load stats', 'err'); return; }
+
+  const statsHTML = `
+    <div class="stat-card" style="--accent:#6c63ff;--icon-bg:rgba(108,99,255,.15)">
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
+      <div class="stat-value">${data.totalUsers.toLocaleString()}</div>
+      <div class="stat-label">Total Users</div>
+      <div class="stat-sub">+<span>${data.newUsersToday}</span> today &nbsp;|&nbsp; +<span>${data.newUsersThisWeek}</span> this week</div>
+    </div>
+    <div class="stat-card" style="--accent:#22c55e;--icon-bg:rgba(34,197,94,.15)">
+      <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="stat-value">${data.verifiedUsers.toLocaleString()}</div>
+      <div class="stat-label">Verified Users</div>
+      <div class="stat-sub">${data.totalUsers > 0 ? Math.round(data.verifiedUsers/data.totalUsers*100) : 0}% of total users</div>
+    </div>
+    <div class="stat-card" style="--accent:#22c55e;--icon-bg:rgba(34,197,94,.15)">
+      <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+      <div class="stat-value">₨${(data.totalBalance/1000).toFixed(1)}K</div>
+      <div class="stat-label">Total Balance in System</div>
+      <div class="stat-sub">Across all user accounts</div>
+    </div>
+    <div class="stat-card" style="--accent:#f59e0b;--icon-bg:rgba(245,158,11,.15)">
+      <div class="stat-icon"><i class="fas fa-arrow-up"></i></div>
+      <div class="stat-value">₨${(data.totalSent/1000).toFixed(1)}K</div>
+      <div class="stat-label">Total Sent</div>
+      <div class="stat-sub">${data.totalTransactions} total transactions</div>
+    </div>
+    <div class="stat-card" style="--accent:#06b6d4;--icon-bg:rgba(6,182,212,.15)">
+      <div class="stat-icon"><i class="fas fa-arrow-down"></i></div>
+      <div class="stat-value">₨${(data.totalReceived/1000).toFixed(1)}K</div>
+      <div class="stat-label">Total Received</div>
+      <div class="stat-sub">All incoming transactions</div>
+    </div>
+    <div class="stat-card" style="--accent:#f59e0b;--icon-bg:rgba(245,158,11,.15);cursor:pointer" onclick="document.querySelector('[onclick*=kyc]').click()">
+      <div class="stat-icon"><i class="fas fa-id-card"></i></div>
+      <div class="stat-value">${data.pendingKyc}</div>
+      <div class="stat-label">KYC Pending</div>
+      <div class="stat-sub">Click to review</div>
+    </div>
+    <div class="stat-card" style="--accent:#ef4444;--icon-bg:rgba(239,68,68,.15);cursor:pointer" onclick="document.querySelector('[onclick*=suspicious]').click()">
+      <div class="stat-icon"><i class="fas fa-shield-exclamation"></i></div>
+      <div class="stat-value" id="dashSuspCount">—</div>
+      <div class="stat-label">Suspicious Flags</div>
+      <div class="stat-sub">Unresolved alerts</div>
+    </div>`;
+  document.getElementById('statsGrid').innerHTML = statsHTML;
+
+  // Recent users table
+  const { ok: ok2, data: d2 } = await api('GET', '/admin/users?limit=5&page=1');
+  if (!ok2) return;
+  renderUsersTable(d2.users, 'recentUsersTable', true);
+
+  // Suspicious count for dashboard card
+  const suspRes = await api('GET', '/admin/suspicious');
+  if (suspRes.ok) {
+    const u = (suspRes.data.flags||[]).filter(f => !f.resolved).length;
+    const el = document.getElementById('dashSuspCount');
+    if (el) el.textContent = u;
+  }
+}
+
+// ===================== USERS =====================
+let searchVal = '';
+function searchUsers() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    searchVal = document.getElementById('userSearch').value.trim();
+    loadUsers(1);
+  }, 400);
+}
+
+async function loadUsers(page = 1) {
+  currentPage = page;
+  document.getElementById('usersTable').innerHTML = '<div class="loading"><i class="fas fa-spinner"></i></div>';
+  const { ok, data } = await api('GET', `/admin/users?page=${page}&limit=15&search=${encodeURIComponent(searchVal)}`);
+  if (!ok) { showToast('Failed to load users', 'err'); return; }
+  renderUsersTable(data.users, 'usersTable', false);
+  renderPagination(data.page, data.pages, data.total);
+}
+
+function renderUsersTable(users, containerId, mini) {
+  if (!users.length) {
+    document.getElementById(containerId).innerHTML = '<div class="empty"><i class="fas fa-users-slash"></i><p>No users found</p></div>';
+    return;
+  }
+  const rows = users.map(u => {
+    const kycStatus = u.kyc?.status;
+    const kycBadge = kycStatus === 'pending'
+      ? `<span class="badge" style="background:rgba(245,158,11,.15);color:var(--warning);font-size:10px;margin-left:4px"><i class="fas fa-clock"></i> KYC</span>`
+      : kycStatus === 'approved' ? '' : '';
+    const accountBadge = u.accountType === 'verified'
+      ? `<span class="badge badge-received" style="font-size:10px"><i class="fas fa-check-circle"></i> Verified</span>`
+      : `<span class="badge" style="background:rgba(148,163,184,.15);color:var(--text2);font-size:10px">Basic</span>`;
+    return `
+    <tr>
+      <td>
+        <div style="font-weight:600">${u.name} ${kycBadge}</div>
+        <div style="font-size:11px;color:var(--text2)">${u.email}</div>
+      </td>
+      <td style="font-family:monospace">${u.mobile}</td>
+      <td><span style="font-weight:600;color:var(--success)">₨${u.balance?.toLocaleString()}</span></td>
+      <td>${accountBadge}</td>
+      <td style="color:var(--text2)">${u.transactions?.length || 0}</td>
+      <td style="color:var(--text2);font-size:12px">${new Date(u.createdAt).toLocaleDateString('en-PK')}</td>
+      ${!mini ? `<td>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn-sm btn-view" onclick="viewTransactions('${u.mobile}','${u.name}')"><i class="fas fa-receipt"></i> Txns</button>
+          <button class="btn-sm btn-bal"  onclick="openBalanceModal('${u.mobile}','${u.name}',${u.balance})"><i class="fas fa-wallet"></i> Balance</button>
+          <button class="btn-sm btn-edit" onclick="openEditModal('${u.mobile}','${u.name}','${u.email}','${u.cnic}')"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn-sm btn-del"  onclick="openDeleteModal('${u.mobile}','${u.name}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>` : ''}
+    </tr>`;
+  }).join('');
+
+  document.getElementById(containerId).innerHTML = `
+    <table>
+      <thead><tr>
+        <th>User</th><th>Mobile</th><th>Balance</th><th>Type</th><th>Transactions</th><th>Joined</th>
+        ${!mini ? '<th>Actions</th>' : ''}
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function renderPagination(page, pages, total) {
+  if (pages <= 1) { document.getElementById('pagination').innerHTML = `<span>${total} users</span>`; return; }
+  let html = `<span style="margin-right:auto">${total} users</span>`;
+  html += `<button onclick="loadUsers(${page-1})" ${page===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+  for (let i = Math.max(1,page-2); i <= Math.min(pages,page+2); i++) {
+    html += `<button onclick="loadUsers(${i})" class="${i===page?'curr':''}">${i}</button>`;
+  }
+  html += `<button onclick="loadUsers(${page+1})" ${page===pages?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
+  document.getElementById('pagination').innerHTML = html;
+}
+
+// ===================== MODALS =====================
+function openEditModal(mobile, name, email, cnic) {
+  document.getElementById('editMobile').value = mobile;
+  document.getElementById('editName').value   = name;
+  document.getElementById('editEmail').value  = email;
+  document.getElementById('editCnic').value   = cnic || '';
+  document.getElementById('editModal').classList.add('open');
+}
+
+async function saveUserEdit() {
+  const mobile = document.getElementById('editMobile').value;
+  const name   = document.getElementById('editName').value.trim();
+  const email  = document.getElementById('editEmail').value.trim();
+  const cnic   = document.getElementById('editCnic').value.trim();
+  const { ok, data } = await api('PATCH', `/admin/users/${mobile}`, { name, email, cnic });
+  showToast(data.message, ok ? 'ok' : 'err');
+  if (ok) { closeModal('editModal'); loadUsers(currentPage); }
+}
+
+function openBalanceModal(mobile, name, balance) {
+  document.getElementById('balMobile').value = mobile;
+  document.getElementById('balCurrentInfo').textContent = `${name} (${mobile}) — Current balance: ₨${balance?.toLocaleString()}`;
+  document.getElementById('balAmount').value = '';
+  document.getElementById('balNote').value   = '';
+  document.getElementById('balanceModal').classList.add('open');
+}
+
+async function saveBalance() {
+  const mobile = document.getElementById('balMobile').value;
+  const amount = parseFloat(document.getElementById('balAmount').value);
+  const note   = document.getElementById('balNote').value.trim();
+  if (isNaN(amount) || amount === 0) { showToast('Enter a valid amount!', 'err'); return; }
+  const { ok, data } = await api('PATCH', `/admin/users/${mobile}/balance`, { amount, note });
+  showToast(ok ? `✅ Done! New balance: ₨${data.newBalance?.toLocaleString()}` : data.message, ok ? 'ok' : 'err');
+  if (ok) { closeModal('balanceModal'); loadUsers(currentPage); }
+}
+
+function openDeleteModal(mobile, name) {
+  document.getElementById('deleteMobile').value = mobile;
+  document.getElementById('deleteInfo').innerHTML = `Are you sure you want to delete <strong>${name}</strong> (${mobile})?<br><br>This will permanently remove their account, balance, and all transaction history.`;
+  document.getElementById('deleteModal').classList.add('open');
+}
+
+async function confirmDelete() {
+  const mobile = document.getElementById('deleteMobile').value;
+  const { ok, data } = await api('DELETE', `/admin/users/${mobile}`);
+  showToast(data.message, ok ? 'ok' : 'err');
+  if (ok) { closeModal('deleteModal'); loadUsers(currentPage); }
+}
+
+async function viewTransactions(mobile, name) {
+  document.getElementById('txModalTitle').innerHTML = `<i class="fas fa-receipt" style="color:var(--success)"></i> ${name}'s Transactions`;
+  document.getElementById('txList').innerHTML = '<div class="loading"><i class="fas fa-spinner"></i></div>';
+  document.getElementById('txModal').classList.add('open');
+
+  const { ok, data } = await api('GET', `/admin/users/${mobile}/transactions`);
+  if (!ok || !data.transactions?.length) {
+    document.getElementById('txList').innerHTML = '<div class="empty"><i class="fas fa-receipt"></i><p>No transactions yet</p></div>';
+    return;
+  }
+
+  const items = data.transactions.map(t => {
+    const isOut = t.type === 'sent' || t.type === 'bill';
+    const icons = { sent: 'fa-arrow-up', received: 'fa-arrow-down', bill: 'fa-file-invoice' };
+    return `<div class="tx-item">
+      <div class="tx-icon tx-${t.type}"><i class="fas ${icons[t.type]}"></i></div>
+      <div class="tx-info">
+        <span>${t.title}</span>
+        <small>${t.recipient ? t.recipient + ' • ' : ''}${new Date(t.date).toLocaleString('en-PK')}</small>
+      </div>
+      <div class="tx-amount ${isOut?'neg':'pos'}">${isOut?'-':'+'} ₨${t.amount?.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('txList').innerHTML = items;
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('authScreen').style.display !== 'none') doLogin();
+});
+
+// ===================== TOAST =====================
+function showToast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  setTimeout(() => t.className = '', 3200);
+}
+
+// ===================== KYC =====================
+async function loadKyc() {
+  document.getElementById('kycTable').innerHTML = '<div class="loading"><i class="fas fa-spinner"></i></div>';
+  const { ok, data } = await api('GET', '/admin/kyc');
+  if (!ok) { showToast('Failed to load KYC', 'err'); return; }
+
+  const filter = document.getElementById('kycFilter').value;
+  let list = data.kyc || [];
+  if (filter) list = list.filter(u => u.kyc?.status === filter);
+
+  // Update badge
+  const pending = (data.kyc || []).filter(u => u.kyc?.status === 'pending').length;
+  const badge = document.getElementById('kycBadge');
+  badge.textContent = pending;
+  badge.style.display = pending > 0 ? 'inline' : 'none';
+
+  if (!list.length) {
+    document.getElementById('kycTable').innerHTML = '<div class="empty"><i class="fas fa-id-card"></i><p>No KYC submissions found</p></div>';
+    return;
+  }
+
+  const statusColor = { pending: 'var(--warning)', approved: 'var(--success)', rejected: 'var(--danger)' };
+  const statusIcon  = { pending: 'fa-clock', approved: 'fa-check-circle', rejected: 'fa-times-circle' };
+
+  const rows = list.map(u => `
+    <tr>
+      <td>
+        <div style="font-weight:600">${u.name}</div>
+        <div style="font-size:11px;color:var(--text2)">${u.email}</div>
+      </td>
+      <td style="font-family:monospace">${u.mobile}</td>
+      <td style="font-size:12px;color:var(--text2)">${u.kyc?.fullName || '—'}</td>
+      <td>
+        <span style="color:${statusColor[u.kyc?.status]};font-weight:600;font-size:12px">
+          <i class="fas ${statusIcon[u.kyc?.status]}"></i> ${(u.kyc?.status||'').toUpperCase()}
+        </span>
+      </td>
+      <td style="color:var(--text2);font-size:12px">${u.kyc?.submittedAt ? new Date(u.kyc.submittedAt).toLocaleDateString('en-PK') : '—'}</td>
+      <td>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn-sm btn-view" onclick="viewKycDetail('${u.mobile}')"><i class="fas fa-eye"></i> View</button>
+          ${u.kyc?.status === 'pending' ? `
+            <button class="btn-sm" style="background:rgba(34,197,94,.15);color:var(--success)" onclick="approveKyc('${u.mobile}','${u.name}')"><i class="fas fa-check"></i> Approve</button>
+            <button class="btn-sm btn-del" onclick="openRejectModal('${u.mobile}')"><i class="fas fa-times"></i> Reject</button>
+          ` : ''}
+        </div>
+      </td>
+    </tr>`).join('');
+
+  document.getElementById('kycTable').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>User</th><th>Mobile</th><th>KYC Name</th><th>Status</th><th>Submitted</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+async function viewKycDetail(mobile) {
+  const { ok, data } = await api('GET', `/admin/users/${mobile}`);
+  if (!ok) { showToast('Failed to load user', 'err'); return; }
+  const kyc = data.kyc || {};
+  const statusColor = { pending: 'var(--warning)', approved: 'var(--success)', rejected: 'var(--danger)' };
+
+  document.getElementById('kycDetailContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div><div style="font-size:11px;color:var(--text2)">Full Name</div><div style="font-weight:600">${kyc.fullName||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">Date of Birth</div><div style="font-weight:600">${kyc.dateOfBirth||'—'}</div></div>
+      <div style="grid-column:1/-1"><div style="font-size:11px;color:var(--text2)">Address</div><div style="font-weight:600">${kyc.address||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">CNIC Front</div><div style="font-size:12px;word-break:break-all;color:var(--primary)">${kyc.cnicFront||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">CNIC Back</div><div style="font-size:12px;word-break:break-all;color:var(--primary)">${kyc.cnicBack||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">Selfie</div><div style="font-size:12px;word-break:break-all;color:var(--primary)">${kyc.selfie||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">Status</div><div style="font-weight:700;color:${statusColor[kyc.status]}">${(kyc.status||'').toUpperCase()}</div></div>
+      ${kyc.rejectReason ? `<div><div style="font-size:11px;color:var(--text2)">Reject Reason</div><div style="color:var(--danger)">${kyc.rejectReason}</div></div>` : ''}
+    </div>`;
+
+  const actions = document.getElementById('kycDetailActions');
+  if (kyc.status === 'pending') {
+    actions.innerHTML = `
+      <button class="btn-cancel-modal" onclick="closeModal('kycDetailModal')">Close</button>
+      <button class="btn-confirm-modal" onclick="closeModal('kycDetailModal');approveKyc('${mobile}','${data.name}')"><i class="fas fa-check"></i> Approve</button>
+      <button class="btn-danger-modal" onclick="closeModal('kycDetailModal');openRejectModal('${mobile}')"><i class="fas fa-times"></i> Reject</button>`;
+  } else {
+    actions.innerHTML = `<button class="btn-cancel-modal" onclick="closeModal('kycDetailModal')">Close</button>`;
+  }
+  document.getElementById('kycDetailModal').classList.add('open');
+}
+
+async function approveKyc(mobile, name) {
+  if (!confirm(`Approve KYC for ${name}? This will upgrade their account to Verified and issue cards.`)) return;
+  const { ok, data } = await api('PATCH', `/admin/kyc/${mobile}/approve`);
+  showToast(data.message, ok ? 'ok' : 'err');
+  if (ok) loadKyc();
+}
+
+function openRejectModal(mobile) {
+  document.getElementById('rejectMobile').value = mobile;
+  document.getElementById('rejectReason').value = '';
+  document.getElementById('kycRejectModal').classList.add('open');
+}
+
+async function confirmRejectKyc() {
+  const mobile = document.getElementById('rejectMobile').value;
+  const reason = document.getElementById('rejectReason').value.trim();
+  if (!reason) { showToast('Enter a rejection reason', 'err'); return; }
+  const { ok, data } = await api('PATCH', `/admin/kyc/${mobile}/reject`, { reason });
+  showToast(data.message, ok ? 'ok' : 'err');
+  if (ok) { closeModal('kycRejectModal'); loadKyc(); }
+}
+
+// ===================== SUSPICIOUS ACTIVITY =====================
+async function loadSuspicious() {
+  document.getElementById('suspTable').innerHTML = '<div class="loading"><i class="fas fa-spinner"></i></div>';
+  const { ok, data } = await api('GET', '/admin/suspicious');
+  if (!ok) { showToast('Failed to load suspicious activity', 'err'); return; }
+
+  const filter = document.getElementById('suspFilter').value;
+  let flags = data.flags || [];
+  if (filter === 'unresolved') flags = flags.filter(f => !f.resolved);
+  if (filter === 'resolved')   flags = flags.filter(f => f.resolved);
+
+  // Update badge
+  const unresolved = (data.flags || []).filter(f => !f.resolved).length;
+  const badge = document.getElementById('suspBadge');
+  badge.textContent = unresolved;
+  badge.style.display = unresolved > 0 ? 'inline' : 'none';
+
+  if (!flags.length) {
+    document.getElementById('suspTable').innerHTML = '<div class="empty"><i class="fas fa-shield-check"></i><p>No suspicious activity found</p></div>';
+    return;
+  }
+
+  const typeLabels = {
+    large_transaction: { label: 'Large Transaction', color: 'var(--warning)', icon: 'fa-money-bill-wave' },
+    multiple_fails:    { label: 'Multiple Failures',  color: 'var(--danger)',  icon: 'fa-exclamation-triangle' }
+  };
+
+  const rows = flags.map(f => {
+    const meta = typeLabels[f.type] || { label: f.type, color: 'var(--text2)', icon: 'fa-flag' };
+    return `<tr style="${f.resolved ? 'opacity:0.5' : ''}">
+      <td>
+        <div style="font-weight:600">${f.name}</div>
+        <div style="font-size:11px;color:var(--text2)">${f.mobile}</div>
+      </td>
+      <td>
+        <span style="color:${meta.color};font-weight:600;font-size:12px">
+          <i class="fas ${meta.icon}"></i> ${meta.label}
+        </span>
+      </td>
+      <td style="font-size:13px;color:var(--text2)">${f.description || '—'}</td>
+      <td style="font-weight:600;color:var(--warning)">${f.amount ? '₨' + f.amount.toLocaleString() : '—'}</td>
+      <td style="color:var(--text2);font-size:12px">${new Date(f.flaggedAt).toLocaleString('en-PK')}</td>
+      <td>
+        ${!f.resolved
+          ? `<button class="btn-sm btn-view" onclick="resolveFlag('${f.mobile}','${f._id}')"><i class="fas fa-check"></i> Resolve</button>`
+          : `<span style="color:var(--success);font-size:12px"><i class="fas fa-check-circle"></i> Resolved</span>`}
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('suspTable').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>User</th><th>Type</th><th>Description</th><th>Amount</th><th>Flagged At</th><th>Action</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+async function resolveFlag(mobile, flagId) {
+  const { ok, data } = await api('PATCH', `/admin/suspicious/${mobile}/${flagId}`);
+  showToast(data.message, ok ? 'ok' : 'err');
+  if (ok) loadSuspicious();
+}
+
+// Load badges on app enter
+async function loadBadges() {
+  const kycRes  = await api('GET', '/admin/kyc');
+  const suspRes = await api('GET', '/admin/suspicious');
+  if (kycRes.ok) {
+    const p = (kycRes.data.kyc||[]).filter(u => u.kyc?.status === 'pending').length;
+    const b = document.getElementById('kycBadge');
+    b.textContent = p; b.style.display = p > 0 ? 'inline' : 'none';
+  }
+  if (suspRes.ok) {
+    const u = (suspRes.data.flags||[]).filter(f => !f.resolved).length;
+    const b = document.getElementById('suspBadge');
+    b.textContent = u; b.style.display = u > 0 ? 'inline' : 'none';
+  }
+}
+</script>
+</body>
+</html>
