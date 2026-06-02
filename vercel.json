@@ -4,6 +4,18 @@
     {
       "src": "server.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "static/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.jpeg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.json",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -12,8 +24,12 @@
       "dest": "/static/$1"
     },
     {
-      "src": "/(.*\\.(jpeg|jpg|png|gif|ico|svg|webp))",
+      "src": "/(.*\\.jpeg)",
       "dest": "/$1"
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/manifest.json"
     },
     {
       "src": "/(.*)",
