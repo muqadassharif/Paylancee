@@ -21,7 +21,6 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.options('*', cors());
 app.use(cookieParser());
 
 const authRoutes      = require('./src/routes/auth.routes');
