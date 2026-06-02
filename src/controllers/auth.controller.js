@@ -100,8 +100,6 @@ const verifyOtp = (req, res) => {
 };
 
 
-// Dono functions export karo taake routes use kar sakein
-module.exports = { sendOtp, verifyOtp };
 
 
 // -----------------------------------------------
