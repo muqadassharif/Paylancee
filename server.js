@@ -17,8 +17,11 @@ const app = express();
 app.use(express.json());
 app.use(cors({
     origin: process.env.ORIGIN || 'http://localhost:5000',
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
+app.options('*', cors());
 app.use(cookieParser());
 
 const authRoutes      = require('./src/routes/auth.routes');
