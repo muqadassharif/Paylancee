@@ -16,7 +16,14 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: process.env.ORIGIN || 'http://localhost:5000',
+    origin: function(origin, callback) {
+        // Allow all origins on Vercel, restrict on local
+        if (process.env.VERCEL) {
+            callback(null, true);
+        } else {
+            callback(null, process.env.ORIGIN || 'http://localhost:5000');
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
